@@ -34,7 +34,7 @@ def make_phoneme_counter(phonemes):
     return phonemes_counter
 
 def main():
-    with open('Text/small.txt') as f:
+    with open('data/Text/small.txt') as f:
         lines = f.readlines()
        # print(lines)
 

@@ -45,7 +45,10 @@ ARPAbet_to_IPA = {'AA': 'ɑ',
 'Z': 'z',
 'ZH': 'ʒ'
 }
+ARPAbet_vowels = ["AA", "AE", 'AH', 'AO', 'AW', 'AY', 'EH', 'ER', 'EY', 'IH', 'IY', 'OW', 'OY', 'UH', 'UW']
+ARPAbet_consonants = ['B', 'CH', 'D', 'DH', 'F', 'G', 'HH', 'JH', 'K', 'L', 'M', 'N', 'NG', 'P', 'R', 'S', 'SH', 'T', 'TH', 'V', 'W', 'Y', 'Z', 'ZH']
 
+ARPAbet_diphthongs = ["AW", "AI"]
 def visualize_counter(counter, title):
     # Extract key-value pairs from the counter
     items = counter.most_common()
@@ -59,8 +62,43 @@ def visualize_counter(counter, title):
 
     # Display the plot
     plt.show()
+def visualize_counter_fancy(counter, title):
+    # Extract key-value pairs from the counter
+    items = counter.most_common()
+    keys, values = zip(*items)
 
+    # Set up the figure and axes
+    fig, ax = plt.subplots(figsize=(10, 6))
 
+    # Customize the colors
+    #bar_color = '#13818F'  # Deep pastel blue color
+    text_color = '#333333'  # Dark gray color
+
+    # Plot the bar chart
+    ax.bar(keys, values)
+
+    # Customize the title and axis labels
+    ax.set_title('Phonemes in '+title, fontsize=18, fontweight='bold', color=text_color)
+    ax.set_xlabel('Phoneme', fontsize=12, color=text_color)
+    ax.set_ylabel('Counts', fontsize=12, color=text_color)
+
+    # Customize the tick labels
+    ax.tick_params(axis='x', rotation=45, labelsize=10, colors=text_color)
+    ax.tick_params(axis='y', labelsize=10, colors=text_color)
+
+    # Set the background color
+    ax.set_facecolor('#FFFFFF')  # White color
+
+    # Remove spines
+    for spine in ax.spines.values():
+        spine.set_color('lightgray')
+
+    # Add a grid
+    ax.set_axisbelow(True)
+    ax.grid(color='lightgray', linestyle='-', linewidth=0.5)
+
+    # Display the plot
+    plt.show()
 def text_to_phonemes(text):
     # Download the CMU Pronouncing Dictionary if not already downloaded
  #   nltk.download('cmudict')

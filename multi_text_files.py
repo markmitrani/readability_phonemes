@@ -3,7 +3,7 @@ import os
 from collections import Counter
 
 import phonemes_IPA
-from phonemes_IPA import text_to_phonemes, visualize_counter
+from phonemes_IPA import text_to_phonemes, visualize_counter, visualize_counter_fancy
 
 
 # Method to convert a Counter to a DataFrame
@@ -42,12 +42,13 @@ def process_text_files(directory_path):
 
 
 def main():
-    grouping = 'phonemes'
+    # grouping. 'phonemes' or 'vowels/consonants'
+    grouping = 'vowels_consonants'
 
     # func: specifying directories and processing them in a loop
-    directories = ['WRLevel2small','WRLevel3small','WRLevel4']
+    directories = ['Text']
     for directory in directories:
-        directory_path = directory
+        directory_path = os.path.join('data', directory)
         phonemes_unfiltered = process_text_files(directory_path)
         phonemes = []
 
@@ -59,9 +60,20 @@ def main():
                 phonemes.append(item)
 
         phoneme_ctr = Counter(phonemes)
+        if grouping == 'vowels_consonants':
+            grouped_ctr = Counter({'Vowels': 0, 'Consonants': 0})
+            for phon in phonemes_IPA.ARPAbet_vowels:
+                if phon in phoneme_ctr:
+                    grouped_ctr['Vowels'] += phoneme_ctr[phon]
+            for phon in phonemes_IPA.ARPAbet_consonants:
+                if phon in phoneme_ctr:
+                    grouped_ctr['Consonants'] += phoneme_ctr[phon]
+            phoneme_ctr = grouped_ctr
+
         print(phoneme_ctr)
-         counter_to_dataframe(phoneme_ctr)
-        visualize_counter(phoneme_ctr,directory_path)
+        # convert counter to dataframe then export to csv
+        counter_to_dataframe(phoneme_ctr).to_csv(directory+"_"+grouping+'.csv')
+        visualize_counter_fancy(phoneme_ctr, directory)
 
 if __name__ == '__main__':
     main()
