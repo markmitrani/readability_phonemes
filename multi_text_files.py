@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import os
 from collections import Counter
@@ -40,13 +42,29 @@ def process_text_files(directory_path):
 
     return result
 
+#
+# Method to take all .txt files in a directory and return their GPC average
+#
+def process_text_files_GPC(directory_path):
+    result = []
 
-def main():
+    for filename in os.listdir(directory_path):
+        if filename.endswith(".txt"):
+            file_path = os.path.join(directory_path, filename)
+            with open(file_path, "r", encoding="latin-1") as file:
+                print("Processing file "+filename+" in "+directory_path+"...")
+                text = file.read()
+                item = phonemes_IPA.compute_GPC(text)
+                result.append(item)
+
+    return np.average(result)
+
+def frequency_analysis():
     # grouping. 'phonemes' or 'vowels/consonants'
     grouping = 'vowels_consonants'
 
     # func: specifying directories and processing them in a loop
-    directories = ['Text']
+    directories = ['7-8', '8-9', '9-10', '11-14']
     for directory in directories:
         directory_path = os.path.join('data', directory)
         phonemes_unfiltered = process_text_files(directory_path)
@@ -72,8 +90,35 @@ def main():
 
         print(phoneme_ctr)
         # convert counter to dataframe then export to csv
-        counter_to_dataframe(phoneme_ctr).to_csv(directory+"_"+grouping+'.csv')
+        counter_to_dataframe(phoneme_ctr).to_csv(directory + "_" + grouping + '.csv')
         visualize_counter_fancy(phoneme_ctr, directory)
+
+def main():
+    GPC_analysis()
+
+def GPC_analysis():
+    result = []
+    # func: specifying directories and processing them in a loop
+    directories = ['7-8', '8-9', '9-10', '11-14']
+    #directories = ['sample1', 'sample2', 'sample3', 'sample4']
+    for directory in directories:
+        directory_path = os.path.join('data', directory)
+        GPC = process_text_files_GPC(directory_path)
+        item = (directory, GPC)
+        result.append(item)
+
+    # Extract x and y values from tuples
+    x = [item[0] for item in result]
+    y = [item[1] for item in result]
+
+    # Plot the data
+    plt.bar(x, y)
+    plt.xlabel('X-axis')
+    plt.ylabel('Y-axis')
+    plt.title('Plotting Data for GPC')
+    plt.savefig('GPC_trend.png')
+    plt.close()
+
 
 if __name__ == '__main__':
     main()

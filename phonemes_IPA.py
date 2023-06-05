@@ -3,6 +3,7 @@ from collections import Counter
 import nltk
 import nltk.data
 import matplotlib.pyplot as plt
+import numpy as np
 
 ARPAbet = ["AA", "AE", 'AH', 'AO', 'AW', 'AY', 'EH', 'ER', 'EY', 'IH', 'IY', 'OW', 'OY', 'UH', 'UW', 'B', 'CH', 'D', 'DH', 'F', 'G', 'HH', 'JH', 'K', 'L', 'M', 'N', 'NG', 'P', 'R', 'S', 'SH', 'T', 'TH', 'V', 'W', 'Y', 'Z', 'ZH']
 ARPAbet_to_IPA = {'AA': 'ɑ',
@@ -99,9 +100,11 @@ def visualize_counter_fancy(counter, title):
 
     # Display the plot
     plt.show()
+
 def text_to_phonemes(text):
-    # Download the CMU Pronouncing Dictionary if not already downloaded
- #   nltk.download('cmudict')
+    # Download the CMU Pronouncing Dictionary and punkt if not already downloaded
+    #nltk.download('cmudict')
+    #nltk.download('punkt')
 
     # Load the CMU Pronouncing Dictionary
     cmudict = nltk.corpus.cmudict.dict()
@@ -122,6 +125,35 @@ def text_to_phonemes(text):
 
     return phonemes
 
+
+def compute_GPC(text):
+    # Download the CMU Pronouncing Dictionary and punkt if not already downloaded
+    #nltk.download('cmudict')
+    #nltk.download('punkt')
+
+    # Load the CMU Pronouncing Dictionary
+    cmudict = nltk.corpus.cmudict.dict()
+
+    # Tokenize the text into words
+    words = nltk.word_tokenize(text.lower())
+
+    # Calculate GPC of each word
+    gpc_list = []
+    for word in words:
+        if word in cmudict:
+            phoneme_list = cmudict[word][0]
+            phoneme_length = len(phoneme_list)
+            grapheme_length = len(word)
+            GPC = phoneme_length/grapheme_length
+            gpc_list.append(GPC)
+        else:
+            # Handle words not found in CMUDict
+            # phonemes.append(word)
+            print("No valid pronunciation found for: "+word)
+
+    return np.average(gpc_list)
+
+
 def main():
     nltk.download('cmudict')
 
@@ -133,7 +165,6 @@ def main():
     phoneme_ctr = Counter(phonemes)
     print(phoneme_ctr)
     visualize_counter(phoneme_ctr, 'Sample')
-
 
 if __name__ == "__main__":
     main()
