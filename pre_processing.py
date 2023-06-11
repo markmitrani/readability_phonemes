@@ -68,6 +68,5 @@ def execute_BiteSize_process():
 def main():
     execute_BiteSize_process()
 
-
 if __name__ == '__main__':
     main()

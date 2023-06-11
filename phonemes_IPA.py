@@ -63,7 +63,8 @@ def visualize_counter(counter, title):
 
     # Display the plot
     plt.show()
-def visualize_counter_fancy(counter, title):
+
+def visualize_counter_fancy(counter, title, save=False):
     # Extract key-value pairs from the counter
     items = counter.most_common()
     keys, values = zip(*items)
@@ -98,8 +99,13 @@ def visualize_counter_fancy(counter, title):
     ax.set_axisbelow(True)
     ax.grid(color='lightgray', linestyle='-', linewidth=0.5)
 
-    # Display the plot
-    plt.show()
+    if not save:
+        # Display the plot
+        plt.show()
+    else:
+        plt.savefig(title+".png")
+        plt.close()
+
 
 def text_to_phonemes(text):
     # Download the CMU Pronouncing Dictionary and punkt if not already downloaded
@@ -118,10 +124,10 @@ def text_to_phonemes(text):
         if word in cmudict:
             phoneme_list = cmudict[word][0]
             phonemes.extend([phoneme.rstrip('012') for phoneme in phoneme_list])
-    else:
+        else:
             # Handle words not found in CMUDict
             # phonemes.append(word)
-        print("No valid pronunciation found for: "+word)
+            print("No valid pronunciation found for: "+word)
 
     return phonemes
 
@@ -140,8 +146,13 @@ def compute_GPC(text):
     # Calculate GPC of each word
     gpc_list = []
     for word in words:
+        phonemes = []
         if word in cmudict:
             phoneme_list = cmudict[word][0]
+            phonemes.extend([phoneme.rstrip('012') for phoneme in phoneme_list])
+            ipa_phonemes = map(lambda x: ARPAbet_to_IPA[x], phonemes)
+            for pp in ipa_phonemes:
+                print(pp)
             phoneme_length = len(phoneme_list)
             grapheme_length = len(word)
             GPC = phoneme_length/grapheme_length
@@ -155,16 +166,16 @@ def compute_GPC(text):
 
 
 def main():
-    nltk.download('cmudict')
-
     text = "That quick beige fox jumped in the air over each thin dog. Look out, I shout, for he's foiled you again, creating chaos."
     text += " Are those shy Eurasian footwear, cowboy chaps, or jolly earthmoving headgear?"
     text += " The hungry purple dinosaur ate the kind, zingy fox, the jabbering crab, and the mad whale and started vending and quacking."
 
-    phonemes = text_to_phonemes(text)
-    phoneme_ctr = Counter(phonemes)
-    print(phoneme_ctr)
-    visualize_counter(phoneme_ctr, 'Sample')
+    print(compute_GPC(text))
+#
+ #   phonemes = text_to_phonemes(text)
+  #  phoneme_ctr = Counter(phonemes)
+   # print(phoneme_ctr)
+    #visualize_counter(phoneme_ctr, 'Sample')
 
 if __name__ == "__main__":
     main()
