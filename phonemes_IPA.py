@@ -4,6 +4,7 @@ import nltk
 import nltk.data
 import matplotlib.pyplot as plt
 import numpy as np
+from nltk.corpus import stopwords
 
 ARPAbet = ["AA", "AE", 'AH', 'AO', 'AW', 'AY', 'EH', 'ER', 'EY', 'IH', 'IY', 'OW', 'OY', 'UH', 'UW', 'B', 'CH', 'D', 'DH', 'F', 'G', 'HH', 'JH', 'K', 'L', 'M', 'N', 'NG', 'P', 'R', 'S', 'SH', 'T', 'TH', 'V', 'W', 'Y', 'Z', 'ZH']
 ARPAbet_to_IPA = {'AA': 'ɑ',
@@ -107,7 +108,7 @@ def visualize_counter_fancy(counter, title, save=False):
         plt.close()
 
 
-def text_to_phonemes(text):
+def text_to_phonemes(text, include_stopwords = True):
     # Download the CMU Pronouncing Dictionary and punkt if not already downloaded
     #nltk.download('cmudict')
     #nltk.download('punkt')
@@ -118,16 +119,20 @@ def text_to_phonemes(text):
     # Tokenize the text into words
     words = nltk.word_tokenize(text.lower())
 
+    stop_words = set(stopwords.words('english'))
+
     # Convert each word to its phoneme representation
     phonemes = []
     for word in words:
-        if word in cmudict:
+        if (word in cmudict) and (include_stopwords or word not in stop_words):
             phoneme_list = cmudict[word][0]
             phonemes.extend([phoneme.rstrip('012') for phoneme in phoneme_list])
         else:
+            pass
+            #print('skip word', word)
             # Handle words not found in CMUDict
             # phonemes.append(word)
-            print("No valid pronunciation found for: "+word)
+            #print("No valid pronunciation found for: "+word)
 
     return phonemes
 

@@ -26,7 +26,7 @@ def add_counter_to_dataframe(df, filename, phoneme_ctr):
 # Method to take all .txt files in a directory and the phonemes of each as entries in a dataframe
 # Returns a dataframe object
 #
-def process_text_files(directory_path):
+def process_text_files(directory_path, include_stopwords = True):
     phonemes_df = phoneme_count_dataframe()
     for filename in os.listdir(directory_path):
         if filename.endswith(".txt"):
@@ -34,15 +34,15 @@ def process_text_files(directory_path):
             with open(file_path, "r", encoding="latin-1") as file:
                 print("Processing file " + filename + " in " + directory_path + "...")
                 text = file.read()
-                add_counter_to_dataframe(phonemes_df, filename, Counter(text_to_phonemes(text)))
+                add_counter_to_dataframe(phonemes_df, filename, Counter(text_to_phonemes(text, include_stopwords)))
 
     return phonemes_df
 
-def compute_frequencies():
+def compute_frequencies(include_stopwords = True):
     # func: specifying directories and processing them in a loop
-    directories = [ #'7-8_processed', '8-9_processed', '9-10_processed',
-                   # '11-14_processed', '14-16_processed']
-                   '14-16_processed']
+    directories = ['7-8_processed', '8-9_processed', '9-10_processed',
+                    '11-14_processed', '14-16_processed']
+
     for directory in directories:
         if '7-8' in directory:
             level = 1
@@ -56,7 +56,7 @@ def compute_frequencies():
         elif '14-16' in directory:
             level = 5
         directory_path = os.path.join('data', directory)
-        result_df = process_text_files(directory_path)
+        result_df = process_text_files(directory_path, include_stopwords)
         result_df['level'] = level
 
         # Normalize the dataframe
@@ -64,7 +64,10 @@ def compute_frequencies():
 
         # Print the normalized dataframe
         print(result_df)
-        result_df.to_csv(directory + '_per_entry.csv')
+        if not include_stopwords:
+            result_df.to_csv(directory + '_per_entry_no_stopwords.csv')
+        else:
+            result_df.to_csv(directory + '_per_entry.csv')
 
 #
 # gets a list of filenames for csv's as an input, and reads them as dataframes.
@@ -110,16 +113,76 @@ def run_correlation_analysis(file):
     # Add a title to the plot
     plt.title('Correlation Matrix')
     # Display the plot
-    plt.show()
-    plt.savefig(file[:-4] + '_corr.png')
+    plt.savefig(file[:-4] + '_corr.png', dpi=300)
     print("Correlation analysis saved as", file[:-4] + '_corr.png')
+    plt.show()
 
+def visualize_dataframe(filename):
+    df = pd.read_csv(filename)
+    # Join the rows by summing them per column and calculate the average
+    sum_cols = df.columns[1:-1]
+    num_rows = len(df[sum_cols])
+
+    #print("final df sums up to: "+df[sum_cols].sum().to_frame().T.divide(num_rows).sum(axis=1))
+
+    final_df = df[sum_cols].sum().to_frame().T.divide(num_rows)
+    columns = final_df.columns
+    values = final_df.values[0]
+
+    # Create key-value pairs with values as keys and columns as values
+    pairs = dict(zip(values, columns))
+
+    # Option: sort the columns in descending order
+    sorted_pairs = dict(sorted(pairs.items(), reverse=True))
+    columns = sorted_pairs.values()
+    values = sorted_pairs.keys()
+
+    # Option: change phonemes to IPA
+    columns = [phonemes_IPA.ARPAbet_to_IPA.get(label) for label in columns]
+
+    # Set up the figure and axes
+    fig, ax = plt.subplots(figsize=(10, 6))
+
+    # Customize the colors
+    # bar_color = '#13818F'  # Deep pastel blue color
+    text_color = '#333333'  # Dark gray color
+
+    # Plot the bar chart
+    ax.bar(columns, values)
+
+    # Customize the title and axis labels
+    ax.set_title('Phonemes in ' + filename[:-4], fontsize=18, fontweight='bold', color=text_color)
+    ax.set_xlabel('Phoneme', fontsize=12, color=text_color)
+    ax.set_ylabel('Counts', fontsize=12, color=text_color)
+
+    # Customize the tick labels
+    ax.tick_params(axis='x', rotation=45, labelsize=10, colors=text_color)
+    ax.tick_params(axis='y', labelsize=10, colors=text_color)
+
+    # Set the background color
+    ax.set_facecolor('#FFFFFF')  # White color
+
+    # Remove spines
+    for spine in ax.spines.values():
+        spine.set_color('lightgray')
+
+    # Add a grid
+    ax.set_axisbelow(True)
+    ax.grid(color='lightgray', linestyle='-', linewidth=0.5)
+
+    plt.savefig(filename[:-4]+'.png')
 
 def main():
-    compute_frequencies()
-    join_dataframe_rows(['7-8_processed_per_entry.csv'   , '8-9_processed_per_entry.csv', '9-10_processed_per_entry.csv',
-                   '11-14_processed_per_entry.csv', '14-16_processed_per_entry.csv'], 'all_levels_full.csv')
-    run_correlation_analysis('all_levels_full.csv')
+    #compute_frequencies(include_stopwords=False)
+ #   join_dataframe_rows(['7-8_processed_per_entry_no_stopwords.csv'   , '8-9_processed_per_entry_no_stopwords.csv', '9-10_processed_per_entry_no_stopwords.csv',
+  #                 '11-14_processed_per_entry_no_stopwords.csv', '14-16_processed_per_entry_no_stopwords.csv'], 'all_levels_full_no_stopwords.csv')
+#    run_correlation_analysis('all_levels_full_no_stopwords.csv')
+    #visualize_dataframe('7-8_processed_per_entry.csv')
+    list1 = ['7-8_processed_per_entry.csv', '8-9_processed_per_entry.csv',
+     '9-10_processed_per_entry.csv', '11-14_processed_per_entry.csv',
+     '14-16_processed_per_entry.csv']
+    for item in list1:
+        visualize_dataframe(item)
 
 if __name__ == '__main__':
     main()
