@@ -172,6 +172,22 @@ def visualize_dataframe(filename):
 
     plt.savefig(filename[:-4]+'.png')
 
+
+def add_one_hot_levels(filename):
+    df = pd.read_csv(filename)
+    df['LEVEL_1'] = 0
+    df['LEVEL_2'] = 0
+    df['LEVEL_3'] = 0
+    df['LEVEL_4'] = 0
+    df['LEVEL_5'] = 0
+
+    for i in range(len(df)):
+        row_level = df.loc[i, 'level']
+        df.loc[i, 'LEVEL_' + str(int(row_level))] = 1
+
+    df.to_csv(filename[:-4]+'_one_hot.csv')
+    print(df.columns)
+
 def main():
     #compute_frequencies(include_stopwords=False)
  #   join_dataframe_rows(['7-8_processed_per_entry_no_stopwords.csv'   , '8-9_processed_per_entry_no_stopwords.csv', '9-10_processed_per_entry_no_stopwords.csv',
@@ -181,8 +197,8 @@ def main():
     list1 = ['7-8_processed_per_entry.csv', '8-9_processed_per_entry.csv',
      '9-10_processed_per_entry.csv', '11-14_processed_per_entry.csv',
      '14-16_processed_per_entry.csv']
-    for item in list1:
-        visualize_dataframe(item)
+    # take the combined csv. and then append it with the columns, level_1, level_2, level_3, level_4, level_5.
+    add_one_hot_levels('all_levels_full.csv')
 
 if __name__ == '__main__':
     main()
