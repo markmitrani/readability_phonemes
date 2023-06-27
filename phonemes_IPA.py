@@ -51,6 +51,21 @@ ARPAbet_vowels = ["AA", "AE", 'AH', 'AO', 'AW', 'AY', 'EH', 'ER', 'EY', 'IH', 'I
 ARPAbet_consonants = ['B', 'CH', 'D', 'DH', 'F', 'G', 'HH', 'JH', 'K', 'L', 'M', 'N', 'NG', 'P', 'R', 'S', 'SH', 'T', 'TH', 'V', 'W', 'Y', 'Z', 'ZH']
 
 ARPAbet_diphthongs = ["AW", "AI"]
+
+year_grouping = ['year_2', 'year_3', 'year_4', 'year_5', 'year_6']
+year_2 = ['B', 'D', 'HH', 'M', 'N', 'P', 'W']
+year_3 = ['F', 'G', 'K', 'NG', 'T', 'Y']
+year_4 = ['CH', 'JH', 'L', 'S', 'SH', 'V', 'Z']
+year_5 = ['DH', 'R', 'ZH']
+year_6 = ['TH']
+
+plosives = ['B', 'P', 'T', 'D', 'K', 'G']
+nasals = ['M', 'N', 'NG']
+fricatives = ['DH', 'F', 'S', 'SH', 'ZH', 'V', 'Z', 'TH']
+glides = ['W', 'Y']
+liquids = ['L', 'R']
+affricates = ['CH', 'JH']
+
 def visualize_counter(counter, title):
     # Extract key-value pairs from the counter
     items = counter.most_common()

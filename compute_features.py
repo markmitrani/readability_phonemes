@@ -8,6 +8,7 @@ from collections import Counter
 import seaborn as sns
 from pandas import read_csv
 
+import count_phonemes
 import phonemes_IPA
 from phonemes_IPA import text_to_phonemes, visualize_counter, visualize_counter_fancy
 
@@ -169,9 +170,9 @@ def text_to_features(text):
 
 def main():
     #compute_features()
-    join_dataframe_rows(['7-8_processed_sample_features.csv', '8-9_processed_sample_features.csv', '9-10_processed_sample_features.csv',
-                   '11-14_processed_sample_features.csv', '14-16_processed_sample_features.csv'], 'all_levels_features.csv')
-    run_correlation_analysis('all_levels_features.csv')
+    #join_dataframe_rows(['7-8_processed_sample_features.csv', '8-9_processed_sample_features.csv', '9-10_processed_sample_features.csv',
+    count_phonemes.add_one_hot_levels('all_levels_features.csv')
+    #run_correlation_analysis('all_levels_features.csv')
 
 if __name__ == '__main__':
     main()
